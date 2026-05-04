@@ -5,9 +5,12 @@ __pycache__/
 *.db-wal
 *.db-journal
 .env
+.venv/
+venv/
 output/
 youtube
 agent/active_project.json
+_metadata/
 
 # Generated AI tool configs (run: python setup.py)
 .claude/commands/fk:*

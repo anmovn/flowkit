@@ -90,9 +90,14 @@ async def lifespan(app: FastAPI):
 
     controller = get_worker_controller()
 
-    # SIGTERM handler for graceful shutdown
+    # SIGTERM handler for graceful shutdown. Windows ProactorEventLoop does not
+    # support add_signal_handler(), so skip the hook there and rely on normal
+    # process termination.
     loop = asyncio.get_event_loop()
-    loop.add_signal_handler(signal.SIGTERM, controller.request_shutdown)
+    try:
+        loop.add_signal_handler(signal.SIGTERM, controller.request_shutdown)
+    except NotImplementedError:
+        logger.warning("SIGTERM handler unsupported on this event loop; continuing without it")
 
     # Start background tasks
     ws_task = asyncio.create_task(run_ws_server())
